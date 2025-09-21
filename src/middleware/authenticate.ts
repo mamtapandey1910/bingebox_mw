@@ -5,21 +5,19 @@ import { jwtsecret, User } from "../models/userModel"
 import { Request, Response, NextFunction } from "express"
 
 export const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
-    const { token } = req.cookies
+    const authResponse = req.headers.authorization
 
-    console.log('tokeennnn', token)
 
-    const tokenMetadata: any = JWT.verify(token, jwtsecret)
-    console.log('tokennnmetadata', tokenMetadata)
+    const token = authResponse.split(" ")[1]
 
-    try {
-        req.user = await User.findById(tokenMetadata.id)
-        res.status(200).json({ mesage: 'test' })
-
-    } catch (err) {
-        console.log(err)
-        next(err)
-
+    if (!token) {
+        return res.status(401).json({ message: 'you are not loggedIn' })
     }
-
+    try {
+        const tokenMetadata: any = JWT.verify(token, jwtsecret)
+        req.user = await User.findById(tokenMetadata.id)
+        return next()
+    } catch (err) {
+        return next(err)
+    }
 }

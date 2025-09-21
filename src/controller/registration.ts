@@ -28,9 +28,8 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 
     const token = user?.getJWTtoken()
-    res.cookie('token', token, {
-        expires: new Date(Date.now() + 60 * 60 * 60 * 1000)
-    }).send({ status: 200, message: 'You have logged in successfully' })
+
+    res.status(200).json({ message: "Logged in successfully", token });
 }
 
 
