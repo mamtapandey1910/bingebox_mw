@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { User } from '../models/userModel'
 import bcryptjs from 'bcryptjs'
 
@@ -28,5 +28,11 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 
     const token = user?.getJWTtoken()
-    res.send({ status: 200, message: 'You have logged in successfully', token })
+    res.cookie('token', token, {
+        expires: new Date(Date.now() + 60 * 60 * 60 * 1000)
+    }).send({ status: 200, message: 'You have logged in successfully' })
+}
+
+
+export const logoutUser = (req: Request, res: Response, next: NextFunction) => {
 }

@@ -4,6 +4,8 @@ import JWT from 'jsonwebtoken';
 
 const Schema = mongoose.Schema
 
+export const jwtsecret = 'HelloIamsecret'
+
 const UserSchema = new Schema({
     name: {
         type: String,
@@ -36,7 +38,6 @@ UserSchema.pre('save', async function (next) {
 })
 
 UserSchema.methods.getJWTtoken = function () {
-    const jwtsecret = 'HelloIamsecret'
     const token = JWT.sign({ id: this._id }, jwtsecret)
     return token
 }
