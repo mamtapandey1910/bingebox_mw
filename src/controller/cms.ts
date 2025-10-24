@@ -2,7 +2,8 @@ import {Request, Response, NextFunction } from "express";
 import multer from 'multer'
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import {v4 as uuid} from 'uuid'
-import { STSClient, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
+import path from 'path'
+import fs from 'fs'
 
 const storage = multer.memoryStorage()
 export const upload = multer({storage})
@@ -38,4 +39,26 @@ export const uploadImages = async (req: Request, res: Response, next: NextFuncti
 
     res.status(200).json({message : 'File has been uploaded', fileUrl})
 
-}  
+}
+
+export const uploadTodisk = (req: Request, res: Response, next: NextFunction) =>{
+        const { title} = req.body
+
+        if(!req.file){
+            return res.status(400).json({message: 'Missing file'})
+        }
+        
+         console.log(__dirname)
+
+        const fileDir = path.join(__dirname, "../../asset")
+
+        if(!fs.existsSync(fileDir)){
+            return res.status(400).json({message: "file path doesn't exist"})
+        }
+
+        const filePath = path.join(fileDir, `${Date.now()}-${req.file.originalname}`)
+
+        fs.writeFileSync(filePath, req.file.buffer)
+
+        res.status(200).json({message: "file has been uploaded"})
+}
