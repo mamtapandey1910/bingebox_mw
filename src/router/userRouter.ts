@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser, registerUser } from '../controller/registration'
+import { loginUser, registerUser } from '../controller/authentication'
 import { isAuthenticated } from '../middleware/authenticate';
 import { getMovie } from '../controller/movies';
 
