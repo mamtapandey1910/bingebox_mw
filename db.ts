@@ -27,12 +27,12 @@ import mongoose, { ConnectOptions } from "mongoose"
 //     console.log('an error occured while connecting to mongodb', err)
 // })
 
-export const connectToMongoDB = () => {
+export const connectToMongoDB = (servername: string) => {
     mongoose.connect('mongodb://127.0.0.1/bingeBox', {
         useNewUrlParser: true,
         useUnifiedTopology: true
     } as ConnectOptions).then(() => {
-        console.log('Successfully connected to MongoDB')
+        console.log(`${servername} has successfully connected to MongoDB`)
     }).catch(error => {
         console.log('an error has occured', error)
     })

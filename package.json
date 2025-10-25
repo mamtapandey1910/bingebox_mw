@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "watch": "tsc -w",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "authserver-dev": "nodemon authserver/authServer.ts"
   },
   "keywords": [],
   "author": "",
