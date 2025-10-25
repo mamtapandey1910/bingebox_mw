@@ -2,13 +2,14 @@ import { Request, Response } from 'express'
 import { User } from '../../src/models/userModel'
 import bcryptjs from 'bcryptjs'
 import JWT from 'jsonwebtoken'
+import {createClient} from 'redis'
 
-const refreshTokenSecret = 'refreshToken'
-const jwtSectetToken = 'HelloIamsecret'
+const redisClient = createClient({url: 'redis://localhost:6379'})
+redisClient.connect()
 
 const createRefreshToken = (user: any) => {
     console.log('userid', user._id)
-    const token = JWT.sign({id: user._id}, refreshTokenSecret)
+    const token = JWT.sign({id: user._id}, process.env.REFRESH_TOKEN_SECRET as string)
     return token
 }
 
@@ -33,20 +34,27 @@ export const loginUser = async (req: Request, res: Response) => {
     const token = user?.getJWTtoken()
     const refreshToken = createRefreshToken(user)
 
+    await redisClient.set(`refresh-token:${user._id}`, refreshToken, {EX: 60})
+
     res.status(200).json({ message: "Logged in successfully", token, refreshToken });
 }
 
 
-export const refreshToken = (req: Request, res: Response) => {
+export const refreshToken = async (req: Request, res: Response) => {
     const refreshToken = req.headers['authorization']?.split(" ")[1]
 
     if(!refreshToken){
         return res.status(401).json({message: 'Please login to refresh token'})
     }
     try{
-        const verifyRefresh: {id: string, iat: any} = JWT.verify(refreshToken, refreshTokenSecret) as any
+        const verifyRefresh: {id: string, iat: any} = JWT.verify(refreshToken,  process.env.REFRESH_TOKEN_SECRET as string) as any
+        const isRefreshTokenInRedis = await redisClient.get(`refresh-token:${verifyRefresh.id}`)
 
-        const token = JWT.sign({id: verifyRefresh.id}, jwtSectetToken ,{ expiresIn: '30s'})
+        if(!isRefreshTokenInRedis){
+            return res.status(401).json({message: 'You have been logged out, please login'})
+        }
+
+        const token = JWT.sign({id: verifyRefresh.id}, process.env.JWT_SECRET as string,{ expiresIn: '30s'})
         res.status(200).json({message: 'new token  has been generated', token})
 
     }catch(err : any){
@@ -54,6 +62,4 @@ export const refreshToken = (req: Request, res: Response) => {
             return res.status(401).json({message: err.message })
         }
     }
-
-
 }
