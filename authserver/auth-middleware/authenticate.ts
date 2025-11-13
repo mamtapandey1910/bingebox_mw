@@ -43,6 +43,7 @@ export const loginUser = async (req: Request, res: Response) => {
 export const refreshToken = async (req: Request, res: Response) => {
     const refreshToken = req.headers['authorization']?.split(" ")[1]
 
+
     if(!refreshToken){
         return res.status(401).json({message: 'Please login to refresh token'})
     }
@@ -54,7 +55,7 @@ export const refreshToken = async (req: Request, res: Response) => {
             return res.status(401).json({message: 'You have been logged out, please login'})
         }
 
-        const token = JWT.sign({id: verifyRefresh.id}, process.env.JWT_SECRET as string,{ expiresIn: '30s'})
+        const token = JWT.sign({id: verifyRefresh.id}, process.env.JWT_SECRET as string,{ expiresIn: '1d'})
         res.status(200).json({message: 'new token  has been generated', token})
 
     }catch(err : any){

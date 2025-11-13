@@ -18,7 +18,7 @@ app.use(cors({
 app.use('/asset', assetRouter )
 
 app.use('/user', userRouter)
-app.use(globalErrorHandle as any)
+app.use(globalErrorHandle)
 
 // app.get('/', (req: Request, res) => {
 //     console.log('this is homepage')

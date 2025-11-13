@@ -4,3 +4,5 @@
 /config
 /authserver/config
 /asset
+.package-lock.json
+/.package-lock.json

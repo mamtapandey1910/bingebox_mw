@@ -1,0 +1,9 @@
+Resources:
+  MyEC2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      ImageId: ami-05944fb0ee80be150
+      InstanceType: t3.micro
+      KeyName: ec2kp
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
