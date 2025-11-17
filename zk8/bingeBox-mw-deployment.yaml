@@ -14,6 +14,8 @@ spec:
       labels:
         app: bingebox-mw
     spec:
+      imagePullSecrets:
+        - name: ecr-registry
       containers:
         - name: bingebox-mw
           image: 554435745712.dkr.ecr.us-east-1.amazonaws.com/binge-box-mw:v1
