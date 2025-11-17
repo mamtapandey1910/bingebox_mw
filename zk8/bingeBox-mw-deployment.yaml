@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: bingebox-mw
-          image: mamtapandey/binge-box-mw:v1
+          image: 554435745712.dkr.ecr.us-east-1.amazonaws.com/binge-box-mw:v1
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
