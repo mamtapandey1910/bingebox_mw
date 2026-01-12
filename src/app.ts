@@ -15,15 +15,16 @@ app.use(cors({
     credentials: true
 }))
 
+
+app.get('/', (req, res) => {
+    console.log('this is homepage')
+    res.status(200).json({message : "Hello Kubernetes"})
+})
+
 app.use('/asset', assetRouter )
 
 app.use('/user', userRouter)
 app.use(globalErrorHandle)
-
-// app.get('/', (req: Request, res) => {
-//     console.log('this is homepage')
-//     res.send('this is homepage')
-// })
 
 
 export default app

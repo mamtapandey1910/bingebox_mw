@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "node src/index.js",
     "watch": "tsc -w",
     "dev": "nodemon src/index.ts",
     "authserver-dev": "nodemon authserver/authServer.ts"
@@ -26,6 +26,7 @@
     "mongoose": "^8.18.0",
     "multer": "^2.0.2",
     "mysql": "^2.18.1",
+    "mysql2": "^3.16.0",
     "path": "^0.12.7",
     "redis": "^5.9.0",
     "uuid": "^13.0.0"
@@ -36,6 +37,7 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
+    "@types/mysql": "^2.15.27",
     "@types/node": "^24.3.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
