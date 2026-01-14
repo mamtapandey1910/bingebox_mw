@@ -30,7 +30,9 @@ export const createUser = async (
     
 }
 
-export const updatedUser = async (userid: string, email?: string, 
+export const updatedUserModel = async (
+    userid?: string,
+    email?: string, 
     password?: string, 
     role?: string,  
     avatar_url?: string, 
@@ -40,6 +42,18 @@ export const updatedUser = async (userid: string, email?: string,
     const field =[]
     const values = []
 
-const updatedUser = await db.execute(``)
+    const updates: Record<string, any> ={
+        userid,
+        email,
+        password,
+        role,
+        avatar_url,
+        refresh_token
+    }
+
+    const updated = Object.entries(updates)
+    console.log('updated', updated)
+
+// const updatedUser = await db.execute(``)
 
 }

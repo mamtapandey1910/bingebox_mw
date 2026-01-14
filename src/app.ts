@@ -26,5 +26,4 @@ app.use('/asset', assetRouter )
 app.use('/user', userRouter)
 app.use(globalErrorHandle)
 
-
 export default app

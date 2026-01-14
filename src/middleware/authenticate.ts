@@ -3,15 +3,16 @@ import { User } from "../models/userModel"
 
 
 import { Request, Response, NextFunction } from "express"
+import { catchAsyncError } from "../utils/catchAsyncError"
 
-export const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
+export const isAuthenticated = catchAsyncError( async (req: any, res: Response, next: NextFunction) : Promise<void> => {
     const authResponse = req.headers.authorization
 
 
-    const token = authResponse.split(" ")[1]
+    const token = authResponse?.split(" ")[1]
 
     if (!token) {
-        return res.status(401).json({ message: 'you are not loggedIn' })
+         res.status(401).json({ message: 'you are not loggedIn' })
     }
     try {
         const tokenMetadata: any = JWT.verify(token, process.env.JWT_SECRET as string)
@@ -20,4 +21,4 @@ export const isAuthenticated = async (req: any, res: Response, next: NextFunctio
     } catch (err) {
         return next(err)
     }
-}
+})
