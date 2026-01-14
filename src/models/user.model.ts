@@ -1,59 +1,95 @@
-import db from '../../db'
+import db from "../../db";
+import bcryptjs from "bcryptjs";
+
+const encryptPassword = async (password: string) => {
+  const salts = await bcryptjs.genSalt(10);
+
+  const hashPass = await bcryptjs.hash(password, salts);
+
+  return hashPass;
+};
 
 export const createUser = async (
-    name: string, 
-    email: string, 
-    password: string, 
-    role: string,  
-    avatar_url?: string, 
-    refresh_token?: string) =>{
-         await db.execute(`CREATE TABLE IF NOT EXISTS 
+  name: string,
+  email: string,
+  password: string,
+  role: string,
+  avatar_url?: string,
+  refresh_token?: string
+) => {
+  await db.execute(`CREATE TABLE IF NOT EXISTS 
             users(id INT AUTO_INCREMENT PRIMARY KEY ,
-            name VARCHAR(50), 
-            email VARCHAR(50) UNIQUE NOT NULL, 
-            password VARCHAR(20) NOT NULL, 
-            role VARCHAR(50) NOT NULL, 
+            name VARCHAR(100), 
+            email VARCHAR(100) UNIQUE NOT NULL, 
+            password VARCHAR(255) NOT NULL, 
+            role VARCHAR(100) NOT NULL, 
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
             avatar_url VARCHAR(255), 
-            refresh_token varchar(255))`)
- 
-            const [userid]: any = await db.execute("INSERT INTO users (name, email, password, role) VALUES(?,?,?,?)", [name, email, password, role])
+            refresh_token varchar(255))`);
 
-            // console.log('insertedID', userid.insertId)
-            const [userRows] : any = await db.execute('SELECT name, email, role FROM users WHERE id=?', [userid.insertId])
-            console.log('user', userRows[0])
-        return {
-            userid: userid.insertId,
-            ...userRows[0]
-        }
-    
-}
+  const hashPass = await encryptPassword(password);
+
+  const [userid]: any = await db.execute(
+    "INSERT INTO users (name, email, password, role) VALUES(?,?,?,?)",
+    [name, email, hashPass, role]
+  );
+
+  const [userRows]: any = await db.execute(
+    "SELECT name, email, role FROM users WHERE id=?",
+    [userid.insertId]
+  );
+  console.log("user", userRows[0]);
+  return {
+    userid: userid.insertId,
+    ...userRows[0],
+  };
+};
 
 export const updatedUserModel = async (
-    userid?: string,
-    email?: string, 
-    password?: string, 
-    role?: string,  
-    avatar_url?: string, 
-    refresh_token?: string
-) =>{
+  userid?: string,
+  name?: string,
+  email?: string,
+  password?: string,
+  role?: string,
+  avatar_url?: string,
+  refresh_token?: string
+) => {
+  const field = [
+    userid,
+    name,
+    email,
+    password,
+    role,
+    avatar_url,
+    refresh_token,
+  ];
 
-    const field =[]
-    const values = []
+  const updateFields: Record<string, any> = {
+    name,
+    email,
+    password,
+    role,
+    avatar_url,
+    refresh_token,
+  };
 
-    const updates: Record<string, any> ={
-        userid,
-        email,
-        password,
-        role,
-        avatar_url,
-        refresh_token
+  const values: string[] = [];
+
+  for (const [key, value] of Object.entries(updateFields)) {
+    if (key === email) {
+      values.push(`${key} = "${value}"`);
     }
+    if (value && key !== email) {
+      values.push(`${key} = '${value}'`);
+    }
+  }
 
-    const updated = Object.entries(updates)
-    console.log('updated', updated)
+  const query = values.join(", ");
+  const updateUserQuery =
+    `UPDATE users SET ` + query + ` WHERE id = '${userid}'`;
+  console.log(updateUserQuery);
+  const response = await db.execute(updateUserQuery);
 
-// const updatedUser = await db.execute(``)
-
-}
+  console.log("updated", response);
+};
