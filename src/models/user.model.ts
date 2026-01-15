@@ -1,3 +1,4 @@
+import { FieldPacket, QueryResult } from "mysql2";
 import db from "../../db";
 import bcryptjs from "bcryptjs";
 
@@ -39,11 +40,17 @@ export const createUser = async (
     "SELECT name, email, role FROM users WHERE id=?",
     [userid.insertId]
   );
-  console.log("user", userRows[0]);
   return {
     userid: userid.insertId,
     ...userRows[0],
   };
+};
+
+export const findUserByEmail = async (email: string) => {
+  const query = `SELECT id, name, password, role,avatar_url  FROM users WHERE email="${email}"`;
+
+  const [userdetails]: any = await db.execute(query);
+  return userdetails[0];
 };
 
 export const updatedUserModel = async (
@@ -55,16 +62,6 @@ export const updatedUserModel = async (
   avatar_url?: string,
   refresh_token?: string
 ) => {
-  const field = [
-    userid,
-    name,
-    email,
-    password,
-    role,
-    avatar_url,
-    refresh_token,
-  ];
-
   const updateFields: Record<string, any> = {
     name,
     email,
@@ -75,7 +72,6 @@ export const updatedUserModel = async (
   };
 
   const values: string[] = [];
-
   for (const [key, value] of Object.entries(updateFields)) {
     if (key === email) {
       values.push(`${key} = "${value}"`);
@@ -84,12 +80,15 @@ export const updatedUserModel = async (
       values.push(`${key} = '${value}'`);
     }
   }
-
   const query = values.join(", ");
   const updateUserQuery =
     `UPDATE users SET ` + query + ` WHERE id = '${userid}'`;
-  console.log(updateUserQuery);
   const response = await db.execute(updateUserQuery);
+};
 
-  console.log("updated", response);
+export const verifyUser = async (
+  id: string,
+  password: string
+): Promise<boolean> => {
+  return false;
 };
